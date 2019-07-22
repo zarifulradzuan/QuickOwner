@@ -7,9 +7,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
-import android.widget.TextView;
-
-import com.google.android.gms.maps.model.Dash;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +38,10 @@ public class MainActivity extends AppCompatActivity {
             Class fragmentClass = null;
             switch (item.getItemId()) {
                 case R.id.navigation_trends:
+                    if (currentTab == 0)
+                        return false;
+                    currentTab = 0;
+                    fragmentClass = TrendFragment.class;
                     break;
                 case R.id.navigation_dashboard:
                     if (currentTab==1)
