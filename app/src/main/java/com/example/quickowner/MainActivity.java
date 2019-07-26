@@ -7,13 +7,15 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
+import android.widget.ProgressBar;
 
 public class MainActivity extends AppCompatActivity {
-
+    private ProgressBar progressBar;
     int currentTab;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        progressBar = findViewById(R.id.progressBar);
         setContentView(R.layout.activity_main);
         try {
             Fragment fragment = (Fragment) DashboardFragment.class.newInstance();

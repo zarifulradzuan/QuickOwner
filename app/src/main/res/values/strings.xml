@@ -12,4 +12,5 @@
     <string name="title_notifications">Notifications</string>
     <string name="premise_status">Premise Status</string>
     <string name="_100">100%</string>
+    <string name="hostUrl">https://aesuneus.000webhostapp.com/qservice.php</string>
 </resources>

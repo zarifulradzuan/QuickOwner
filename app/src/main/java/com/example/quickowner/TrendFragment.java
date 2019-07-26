@@ -7,37 +7,62 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CompoundButton;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 
+import com.example.quickowner.controller.PlaceController;
 import com.github.mikephil.charting.charts.BarChart;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 public class TrendFragment extends Fragment {
     private BarChart trendChart;
     private ProgressBar progressBar;
-
+    private PlaceController placeController;
+    private Switch modeSwitch;
+    private TrendFragment self;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        self = this;
+        //TODO
+        //Get place id from shared preferences
+        final String placeId = "mcdonald-mitc";
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
         progressBar = rootView.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
         trendChart = rootView.findViewById(R.id.trendChart);
+        modeSwitch = rootView.findViewById(R.id.modeSwitch);
 
-        List<BarEntry> entries = new ArrayList<>();
+        placeController = new PlaceController();
 
-        for (int i = 0; i < 7; i++)
-            entries.add(new BarEntry(i, i * 10));
+        modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    displayChart(placeId, PlaceController.MODE_WEEKLY);
+                    modeSwitch.setText("WEEKLY");
+                } else {
+                    displayChart(placeId, PlaceController.MODE_DAILY);
+                    modeSwitch.setText("DAILY");
+                }
+            }
+        });
 
-        BarDataSet barDataSet = new BarDataSet(entries, "Trend over the past week");
-        BarData barData = new BarData(barDataSet);
-        trendChart.setData(barData);
-        trendChart.invalidate();
+
+        displayChart(placeId, PlaceController.MODE_DAILY);
+
         return rootView;
+    }
+
+    private void displayChart(final String placeId, final int mode) {
+
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                placeController.getTrendData(placeId, mode, trendChart, self);
+            }
+        };
+        thread.run();
     }
 }

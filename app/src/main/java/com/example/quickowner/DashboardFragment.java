@@ -24,11 +24,12 @@ public class DashboardFragment extends Fragment {
     private RadioGroup dshOverrideGroup;
     private ProgressBar placeFullness;
     private Place place;
+    private View rootView;
     private boolean updating;
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
+        rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         updating = false;
         dshLastUpdated = rootView.findViewById(R.id.dshLastUpdated);
@@ -67,7 +68,7 @@ public class DashboardFragment extends Fragment {
         SharedPreferences.Editor sharedPreferences = getActivity().getSharedPreferences("quickowner",Context.MODE_PRIVATE).edit();
         sharedPreferences.putString("placeid","mcdonald-mitc");
         sharedPreferences.commit();
-
+        rootView.setVisibility(View.INVISIBLE);
         return rootView;
     }
 
@@ -111,6 +112,7 @@ public class DashboardFragment extends Fragment {
             e.printStackTrace();
             onDestroy();
         }
+        rootView.setVisibility(View.VISIBLE);
         updating=false;
     }
 }
