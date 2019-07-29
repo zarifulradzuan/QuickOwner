@@ -58,6 +58,18 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_CANCELED) {
+            if (requestCode == LOGIN) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                assert data != null;
+                FirebaseUser user = data.getParcelableExtra(getString(R.string.userIntentName));
+                if (user != null) {
+                    editor.putString("email", user.getEmail());
+
+                }
+            }
+        }
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
