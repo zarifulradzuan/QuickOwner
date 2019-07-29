@@ -27,6 +27,7 @@ public class UserController {
     public UserController(Context context) {
         mAuth = FirebaseAuth.getInstance();
         this.context = context;
+        loginResponseListener = (LoginResponseListener) context;
     }
 
     public void signIn(String email, String password) {
@@ -38,7 +39,6 @@ public class UserController {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithEmail:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            loginResponseListener = (LoginResponseListener) context;
                             loginResponseListener.loginResponse(user);
                         } else {
                             // If sign in fails, display a message to the user.

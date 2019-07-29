@@ -130,7 +130,11 @@ public class PlaceController {
                     @Override
                     public String getAxisLabel(float value, AxisBase axis) {
                         Float valueObj = value;
-                        return labels.get((valueObj.intValue()));
+                        try {
+                            return labels.get((valueObj.intValue()));
+                        } catch (IndexOutOfBoundsException e) {
+                            return "";
+                        }
                     }
                 };
                 BarDataSet barDataSet = new BarDataSet(entries, "Percentage of fullness");

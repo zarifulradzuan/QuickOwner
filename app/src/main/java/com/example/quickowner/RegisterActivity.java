@@ -61,7 +61,8 @@ public class RegisterActivity extends Activity implements MapDialog.PremiseLocat
                                             .build();
                                     assert user != null;
                                     String uid = user.getUid();
-
+                                    //TODO
+                                    //Implement firebase user+premise
                                     Intent intent = new Intent();
                                     intent.putExtra("user", user);
                                     setResult(RESULT_OK);

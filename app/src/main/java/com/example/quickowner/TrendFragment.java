@@ -1,5 +1,7 @@
 package com.example.quickowner;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -18,6 +20,7 @@ import com.github.mikephil.charting.charts.BarChart;
 public class TrendFragment extends Fragment {
     private BarChart trendChart;
     private ProgressBar progressBar;
+    private SharedPreferences sharedPreferences;
     private PlaceController placeController;
     private Switch modeSwitch;
     private TrendFragment self;
@@ -27,7 +30,9 @@ public class TrendFragment extends Fragment {
         self = this;
         //TODO
         //Get place id from shared preferences
-        final String placeId = "mcdonald-mitc";
+
+        sharedPreferences = getContext().getSharedPreferences("QuickOwner", Context.MODE_PRIVATE);
+        final String placeId = sharedPreferences.getString("placeOd", null);
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
         progressBar = rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);

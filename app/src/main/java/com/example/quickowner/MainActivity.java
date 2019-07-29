@@ -23,55 +23,6 @@ public class MainActivity extends AppCompatActivity {
     SharedPreferences sharedPreferences;
     private int LOGIN = 1;
     private FirebaseAuth firebaseAuth;
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        sharedPreferences = getSharedPreferences("QuickOwner", MODE_PRIVATE);
-        firebaseAuth = FirebaseAuth.getInstance();
-
-
-
-        super.onCreate(savedInstanceState);
-        progressBar = findViewById(R.id.progressBar);
-        setContentView(R.layout.activity_main);
-        try {
-            Fragment fragment = (Fragment) DashboardFragment.class.newInstance();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.mainFragment, fragment).commit();
-            currentTab=1;
-        }catch(Exception e){
-            e.printStackTrace();
-        }
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
-        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
-        if (currentUser == null) {
-            Intent intent = new Intent(this, LoginActivity.class);
-            startActivityForResult(intent, LOGIN);
-        }
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_CANCELED) {
-            if (requestCode == LOGIN) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-
-                assert data != null;
-                FirebaseUser user = data.getParcelableExtra(getString(R.string.userIntentName));
-                if (user != null) {
-                    editor.putString("email", user.getEmail());
-
-                }
-            }
-        }
-    }
-
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -79,6 +30,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
             Fragment fragment = null;
             Class fragmentClass = null;
             switch (item.getItemId()) {
@@ -109,15 +61,66 @@ public class MainActivity extends AppCompatActivity {
                 } catch (IllegalAccessException ee){
                     ee.printStackTrace();
                 }
-
-
-                FragmentManager fragmentManager = getSupportFragmentManager();
-                fragmentManager.beginTransaction().replace(R.id.mainFragment, fragment).commit();
+                final Fragment finalFragment = fragment;
+                Thread changeFragment = new Thread() {
+                    @Override
+                    public void run() {
+                        FragmentManager fragmentManager = getSupportFragmentManager();
+                        fragmentManager.beginTransaction().replace(R.id.mainFragment, finalFragment).commit();
+                    }
+                };
+                changeFragment.run();
                 return true;
             }
             return false;
         }
     };
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+        if (currentUser == null) {
+            Intent intent = new Intent(this, LoginActivity.class);
+            startActivityForResult(intent, LOGIN);
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        sharedPreferences = getSharedPreferences("QuickOwner", MODE_PRIVATE);
+        firebaseAuth = FirebaseAuth.getInstance();
+        firebaseAuth.signOut();
+
+
+        super.onCreate(savedInstanceState);
+        progressBar = findViewById(R.id.progressBar);
+        setContentView(R.layout.activity_main);
+        try {
+            Fragment fragment = (Fragment) DashboardFragment.class.newInstance();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction().replace(R.id.mainFragment, fragment).commit();
+            currentTab = 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != RESULT_CANCELED) {
+            if (requestCode == LOGIN) {
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                if (firebaseAuth.getCurrentUser() != null) {
+                    editor.putString("email", firebaseAuth.getCurrentUser().getEmail());
+
+                }
+            }
+        }
+    }
 
 
 }
