@@ -1,7 +1,5 @@
 package com.example.quickowner;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,11 +15,11 @@ import android.widget.TextView;
 
 import com.example.quickowner.controller.PlaceController;
 import com.example.quickowner.model.Place;
+import com.google.firebase.auth.FirebaseAuth;
 
-public class DashboardFragment extends Fragment {
+public class DashboardFragment extends Fragment implements PlaceController.PlaceListener {
     private TextView dshPlaceName, dshOpenStatus, dshLastUpdated, dshPlaceCurrMax, dshPercentage, dshOverrideStatus;
     private RadioButton dshOpen, dshClose, dshClear;
-    private RadioGroup dshOverrideGroup;
     private ProgressBar placeFullness;
     private Place place;
     private View rootView;
@@ -30,7 +28,7 @@ public class DashboardFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.fragment_dashboard, container, false);
-
+        RadioGroup dshOverrideGroup;
         updating = false;
         dshLastUpdated = rootView.findViewById(R.id.dshLastUpdated);
         dshOpenStatus = rootView.findViewById(R.id.dshOpenStatus);
@@ -64,15 +62,20 @@ public class DashboardFragment extends Fragment {
                 }
             }
         });
-        PlaceController.getPlace("mcdonald-mitc", this);
-        SharedPreferences.Editor sharedPreferences = getActivity().getSharedPreferences("quickowner",Context.MODE_PRIVATE).edit();
-        sharedPreferences.putString("placeid","mcdonald-mitc");
-        sharedPreferences.commit();
+        PlaceController placeController = new PlaceController();
+        placeController.setPlaceListener(this);
+        try {
+            FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+            placeController.getPlace(firebaseAuth.getCurrentUser().getUid());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
         rootView.setVisibility(View.INVISIBLE);
         return rootView;
     }
 
-    public void updatePlace(Place place){
+    @Override
+    public void returnPlace(Place place) {
         try {
             this.place = place;
             updating = true;

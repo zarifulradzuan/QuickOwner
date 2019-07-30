@@ -1,7 +1,5 @@
 package com.example.quickowner;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -15,12 +13,12 @@ import android.widget.Switch;
 
 import com.example.quickowner.controller.PlaceController;
 import com.github.mikephil.charting.charts.BarChart;
+import com.google.firebase.auth.FirebaseAuth;
 
 
 public class TrendFragment extends Fragment {
     private BarChart trendChart;
     private ProgressBar progressBar;
-    private SharedPreferences sharedPreferences;
     private PlaceController placeController;
     private Switch modeSwitch;
     private TrendFragment self;
@@ -31,8 +29,8 @@ public class TrendFragment extends Fragment {
         //TODO
         //Get place id from shared preferences
 
-        sharedPreferences = getContext().getSharedPreferences("QuickOwner", Context.MODE_PRIVATE);
-        final String placeId = sharedPreferences.getString("placeOd", null);
+        FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
+        final String placeId = firebaseAuth.getUid();
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
         progressBar = rootView.findViewById(R.id.progressBar);
         progressBar.setVisibility(View.INVISIBLE);

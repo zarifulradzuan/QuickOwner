@@ -12,7 +12,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.example.quickowner.DashboardFragment;
 import com.example.quickowner.R;
 import com.example.quickowner.TrendFragment;
 import com.example.quickowner.model.OpeningHours;
@@ -51,6 +50,7 @@ public class PlaceController {
     private static final String daysList[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     private Place place;
     private FirebaseDatabase database;
+    private PlaceListener placeListener;
     private DatabaseReference databaseReference;
     public PlaceController(Place place) {
         this.place = place;
@@ -70,6 +70,9 @@ public class PlaceController {
         placeRef.setValue(place);
     }
 
+    public void setPlaceListener(PlaceListener placeListener) {
+        this.placeListener = placeListener;
+    }
 
     public void getTrendData(final String placeId, final int mode, final BarChart trendChart, TrendFragment trendFragment) {
         final List<BarEntry> entries = new ArrayList<>();
@@ -109,7 +112,7 @@ public class PlaceController {
                 } else {
                     try {
                         for (int i = 0; i < 24; i++) {
-                            labels.add(String.valueOf(i));
+                            labels.add(i + ":00");
                             for (int j = 0; j < dataSetJSON.length(); j++) {
                                 JSONObject currentObj = dataSetJSON.getJSONObject(j);
                                 if (currentObj.getInt("Hour") == i) {
@@ -143,6 +146,9 @@ public class PlaceController {
                 trendChart.getXAxis().setValueFormatter(valueFormatter);
                 trendChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
                 trendChart.setData(barData);
+                if (mode == MODE_DAILY) {
+                    trendChart.zoom(3.5f, 1f, 0, 0);
+                }
                 trendChart.invalidate();
             }
         },
@@ -162,20 +168,23 @@ public class PlaceController {
         };
         requestQueue.add(stringRequest);
     }
-    public static void getPlace(String placeId, final DashboardFragment dashboardFragment) {
 
+    public void getPlace(String placeId) throws Exception {
+        if (placeListener == null)
+            throw new Exception("No listener set");
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference databaseReference = database.getReference("places");
         Query query = databaseReference.orderByChild("placeId").startAt(placeId).endAt(placeId);
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                dashboardFragment.updatePlace(dataSnapshot.getValue(Place.class));
+                System.out.println("Received");
+                placeListener.returnPlace(dataSnapshot.getValue(Place.class));
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                dashboardFragment.updatePlace(dataSnapshot.getValue(Place.class));
+                placeListener.returnPlace(dataSnapshot.getValue(Place.class));
             }
 
             @Override
@@ -195,6 +204,8 @@ public class PlaceController {
         });
 
     }
+
+
     public MarkerOptions getPlaceMarker(){
         MarkerOptions markerOptions = new MarkerOptions();
         markerOptions.title(this.place.getPlaceName());
@@ -247,5 +258,9 @@ public class PlaceController {
         }
         else
             return currentTime.isAfter(LocalTime.parse(today.getOpening())) && currentTime.isBefore(LocalTime.parse(today.getClosing()));
+    }
+
+    public interface PlaceListener {
+        void returnPlace(Place place);
     }
 }

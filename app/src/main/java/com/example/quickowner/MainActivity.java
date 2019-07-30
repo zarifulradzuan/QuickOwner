@@ -1,7 +1,6 @@
 package com.example.quickowner;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +8,8 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ProgressBar;
 
@@ -16,11 +17,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    String username;
     private ProgressBar progressBar;
     int currentTab;
-    String placeId;
-    SharedPreferences sharedPreferences;
+
     private int LOGIN = 1;
     private FirebaseAuth firebaseAuth;
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -76,22 +75,15 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
+
     @Override
-    protected void onStart() {
-        super.onStart();
+    protected void onCreate(Bundle savedInstanceState) {
+        firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
         if (currentUser == null) {
             Intent intent = new Intent(this, LoginActivity.class);
             startActivityForResult(intent, LOGIN);
         }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        sharedPreferences = getSharedPreferences("QuickOwner", MODE_PRIVATE);
-        firebaseAuth = FirebaseAuth.getInstance();
-        firebaseAuth.signOut();
-
 
         super.onCreate(savedInstanceState);
         progressBar = findViewById(R.id.progressBar);
@@ -111,16 +103,35 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode != RESULT_CANCELED) {
-            if (requestCode == LOGIN) {
-                SharedPreferences.Editor editor = sharedPreferences.edit();
-                if (firebaseAuth.getCurrentUser() != null) {
-                    editor.putString("email", firebaseAuth.getCurrentUser().getEmail());
-
-                }
-            }
+        if (resultCode == RESULT_CANCELED) {
+            finish();
         }
+
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu); //your file name
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.logOutMenu) {
+            firebaseAuth.signOut();
+            finish();
+            startActivity(getIntent());
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 }

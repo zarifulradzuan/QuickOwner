@@ -11,7 +11,7 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatDialogFragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 
@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-public class MapDialog extends AppCompatDialogFragment {
+public class MapDialog extends DialogFragment {
     LocationManager locationManager;
     LocationListener locationListener;
     private MapView mapView;
@@ -39,17 +39,18 @@ public class MapDialog extends AppCompatDialogFragment {
         if (!(PackageManager.PERMISSION_GRANTED == getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION))) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
         }
+
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         Bundle bundle = getArguments();
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.map_dialog, null);
         premiseLocationInterface = (PremiseLocationInterface) getContext();
         builder.setView(view)
-                .setTitle("Incident Location")
+                .setTitle("Premise Location")
                 .setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        premiseLocationInterface.setLocationOfPremise(currentLocation);
+                        premiseLocationInterface.setLocationOfPremise(currentMarker.getPosition());
                     }
                 })
                 .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -134,6 +135,7 @@ public class MapDialog extends AppCompatDialogFragment {
         return builder.create();
     }
 
+
     @Override
     public void onStart() {
         super.onStart();
@@ -141,6 +143,6 @@ public class MapDialog extends AppCompatDialogFragment {
     }
 
     public interface PremiseLocationInterface {
-        void setLocationOfPremise(Location locationOfPremise);
+        void setLocationOfPremise(LatLng locationOfPremise);
     }
 }

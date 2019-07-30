@@ -17,12 +17,13 @@ public class LoginActivity extends Activity implements UserController.LoginRespo
     private UserController userController;
     private EditText email;
     private EditText password;
-    private Button loginButton;
-    private Button registerButton;
+
     private ProgressBar progressBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Button loginButton;
+        Button registerButton;
         setContentView(R.layout.activity_login);
         progressBar = findViewById(R.id.loading);
 
@@ -56,7 +57,7 @@ public class LoginActivity extends Activity implements UserController.LoginRespo
         super.onActivityResult(requestCode, resultCode, data);
         progressBar.setVisibility(View.INVISIBLE);
         if (resultCode == RESULT_OK) {
-            Toast.makeText(getApplicationContext(), "Register application successful. Please wait for confirmation email.", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplicationContext(), "Register application successful. You may login now.", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -70,4 +71,6 @@ public class LoginActivity extends Activity implements UserController.LoginRespo
         } else
             Toast.makeText(getApplicationContext(), getApplicationContext().getString(R.string.loginFail), Toast.LENGTH_SHORT).show();
     }
+
+
 }
