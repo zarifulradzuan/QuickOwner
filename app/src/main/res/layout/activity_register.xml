@@ -57,6 +57,20 @@
             android:inputType="textPassword"
             android:selectAllOnFocus="true" />
 
+        <EditText
+            android:id="@+id/passwordConfirmRegister"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="24dp"
+            android:autofillHints="@string/prompt_password"
+            android:hint="@string/confirm_password"
+            android:imeActionLabel="@string/action_sign_in_short"
+            android:imeOptions="actionDone"
+            android:inputType="textPassword"
+            android:selectAllOnFocus="true" />
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

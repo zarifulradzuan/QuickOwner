@@ -27,6 +27,7 @@ import com.google.firebase.auth.UserProfileChangeRequest;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Objects;
 
 public class RegisterActivity extends AppCompatActivity implements MapDialog.PremiseLocationInterface, ReverseGeocoder.ReverseGeocodeListener {
     Button registerButton;
@@ -36,6 +37,7 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
     //Owner info
     EditText email;
     EditText password;
+    EditText confirmPassword;
     EditText name;
 
     //Premise info
@@ -91,6 +93,7 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
         //Owner
         email = findViewById(R.id.emailRegister);
         password = findViewById(R.id.passwordRegister);
+        confirmPassword = findViewById(R.id.passwordConfirmRegister);
         name = findViewById(R.id.nameRegister);
 
         //Premise
@@ -158,7 +161,7 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
         openingHoursTextView.add(closingSunday);
 
 
-        for (final TextView a : openingHoursTextView) {
+        for (final TextView a : openingHoursTextView)
             a.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -172,7 +175,7 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
                             mTimePicker = new TimePickerDialog(RegisterActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                                    a.setText(selectedHour + ":" + selectedMinute);
+                                    a.setText(String.format(getApplicationContext().getString(R.string.timeFormat), selectedHour, selectedMinute));
                                 }
                             }, hour, minute, true);//Yes 24 hour time
                             mTimePicker.setTitle("Select Time");
@@ -182,7 +185,6 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
                     thread.run();
                 }
             });
-        }
 
         //Switch
         openingHoursSwitch = new ArrayList<>();
@@ -211,73 +213,73 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<AuthResult> task) {
-                                if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-                                    FirebaseUser user = mAuth.getCurrentUser();
+                if (validate()) {
+                    progressBar.setVisibility(View.VISIBLE);
+                    mAuth.createUserWithEmailAndPassword(email.getText().toString(), password.getText().toString())
+                            .addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<AuthResult> task) {
+                                    if (task.isSuccessful()) {
+                                        FirebaseUser user = mAuth.getCurrentUser();
 
-                                    UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(name.getText().toString())
-                                            .build();
-
-
-                                    String uid = user.getUid();
-                                    //TODO
-                                    //Implement firebase user+premise
-                                    //Get opening hours from textviews
-                                    ArrayList<OpeningHours> openingHours = new ArrayList<>();
-                                    for (int i = 0; i < (openingHoursTextView.size() / 2) - 1; i += 2) {
-                                        System.out.println(i + " " + (openingHoursTextView.size() / 2));
-                                        OpeningHours openingHour = new OpeningHours();
-                                        if (!openingHoursSwitch.get(i).isChecked()) {
-                                            if (openingHoursTextView.get(i).getText().toString().equals(getString(R.string.opening_time)))
-                                                openingHour.setOpening("");
-                                            else
-                                                openingHour.setOpening(openingHoursTextView.get(i).getText().toString());
-                                            if (openingHoursTextView.get(i + 1).getText().toString().equals(getString(R.string.closing_time)))
-                                                openingHour.setClosing("");
-                                            else
-                                                openingHour.setClosing(openingHoursTextView.get(i + 1).getText().toString());
-                                        } else {
-                                            openingHour.setOpening("00:00");
-                                            openingHour.setClosing("00:00");
+                                        UserProfileChangeRequest userProfileChangeRequest = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName(name.getText().toString())
+                                                .build();
+                                        if (user != null) {
+                                            user.updateProfile(userProfileChangeRequest);
                                         }
-                                        openingHours.add(openingHour);
+                                        String uid;
+                                        Objects.requireNonNull(user).getUid();
+                                        uid = user.getUid();
+                                        ArrayList<OpeningHours> openingHours = new ArrayList<>();
+                                        for (int i = 0; i < (openingHoursTextView.size() / 2) - 1; i += 2) {
+                                            System.out.println(i + " " + (openingHoursTextView.size() / 2));
+                                            OpeningHours openingHour = new OpeningHours();
+                                            if (!openingHoursSwitch.get(i).isChecked()) {
+                                                if (openingHoursTextView.get(i).getText().toString().equals(getString(R.string.opening_time)))
+                                                    openingHour.setOpening("");
+                                                else
+                                                    openingHour.setOpening(openingHoursTextView.get(i).getText().toString());
+                                                if (openingHoursTextView.get(i + 1).getText().toString().equals(getString(R.string.closing_time)))
+                                                    openingHour.setClosing("");
+                                                else
+                                                    openingHour.setClosing(openingHoursTextView.get(i + 1).getText().toString());
+                                            } else {
+                                                openingHour.setOpening("00:00");
+                                                openingHour.setClosing("00:00");
+                                            }
+                                            openingHours.add(openingHour);
+                                        }
+
+                                        placeToCreate = new Place();
+                                        placeToCreate.setAddress(address.getText().toString());
+                                        placeToCreate.setPlaceLatitude(premiseLocation.latitude);
+                                        placeToCreate.setPlaceLongitude(premiseLocation.longitude);
+                                        placeToCreate.setIdOwner(user.getUid());
+                                        placeToCreate.setCurrentOccupancy(0);
+                                        placeToCreate.setMaxOccupancy(Integer.parseInt(maxOccupancy.getText().toString()));
+                                        placeToCreate.setLastUpdated("00:00");
+                                        placeToCreate.setOpeningHours(openingHours);
+                                        placeToCreate.setPlaceName(premiseName.getText().toString());
+                                        placeToCreate.setOverrideStatus(-1);
+                                        placeToCreate.setPlaceId(uid);
+
+                                        PlaceController.insertPlace(placeToCreate);
+
+
+                                        setResult(RESULT_OK);
+                                        finish();
+
+                                    } else {
+                                        // If sign in fails, display a message to the user.
+                                        setResult(RESULT_CANCELED);
+                                        Toast.makeText(getApplicationContext(), "Register application failed. Please try again, or contact us", Toast.LENGTH_SHORT).show();
                                     }
 
-                                    placeToCreate = new Place();
-                                    placeToCreate.setAddress(address.getText().toString());
-                                    placeToCreate.setPlaceLatitude(premiseLocation.latitude);
-                                    placeToCreate.setPlaceLongitude(premiseLocation.longitude);
-                                    placeToCreate.setIdOwner(user.getUid());
-                                    placeToCreate.setCurrentOccupancy(0);
-                                    placeToCreate.setMaxOccupancy(Integer.parseInt(maxOccupancy.getText().toString()));
-                                    placeToCreate.setLastUpdated("00:00");
-                                    placeToCreate.setOpeningHours(openingHours);
-                                    placeToCreate.setPlaceName(premiseName.getText().toString());
-                                    placeToCreate.setOverrideStatus(-1);
-                                    placeToCreate.setPlaceId(uid);
-
-                                    PlaceController.insertPlace(placeToCreate);
-
-
-
-                                    setResult(RESULT_OK);
-                                    finish();
-
-                                } else {
-                                    // If sign in fails, display a message to the user.
-                                    setResult(RESULT_CANCELED);
-                                    Toast.makeText(getApplicationContext(), "Register application failed. Please try again, or contact us", Toast.LENGTH_SHORT).show();
+                                    // ...
                                 }
-
-                                // ...
-                            }
-                        });
+                            });
+                }
             }
         });
     }
@@ -366,8 +368,17 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
         if (!address.equals("")) {
             this.address.setText(address);
         } else {
-            this.address.setText("Not found");
+            this.address.setText("");
         }
     }
+
+    private boolean validate() {
+        if (!password.getText().equals(confirmPassword.getText()))
+            return false;
+        if (password.getText().toString().length() < 8)
+            return false;
+        return premiseLocation != null;
+    }
+
 
 }

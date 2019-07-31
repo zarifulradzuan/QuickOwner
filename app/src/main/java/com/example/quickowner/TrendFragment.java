@@ -15,6 +15,8 @@ import com.example.quickowner.controller.PlaceController;
 import com.github.mikephil.charting.charts.BarChart;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 
 public class TrendFragment extends Fragment {
     private BarChart trendChart;
@@ -33,7 +35,7 @@ public class TrendFragment extends Fragment {
         final String placeId = firebaseAuth.getUid();
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
         progressBar = rootView.findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
         trendChart = rootView.findViewById(R.id.trendChart);
         modeSwitch = rootView.findViewById(R.id.modeSwitch);
 
@@ -42,12 +44,13 @@ public class TrendFragment extends Fragment {
         modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                progressBar.setVisibility(View.VISIBLE);
                 if (isChecked) {
                     displayChart(placeId, PlaceController.MODE_WEEKLY);
-                    modeSwitch.setText("WEEKLY");
+                    modeSwitch.setText(getString(R.string.mode_weekly));
                 } else {
                     displayChart(placeId, PlaceController.MODE_DAILY);
-                    modeSwitch.setText("DAILY");
+                    modeSwitch.setText(Objects.requireNonNull(getContext()).getString(R.string.mode_daily));
                 }
             }
         });
@@ -59,7 +62,7 @@ public class TrendFragment extends Fragment {
     }
 
     private void displayChart(final String placeId, final int mode) {
-
+        progressBar.setVisibility(View.INVISIBLE);
         Thread thread = new Thread() {
             @Override
             public void run() {

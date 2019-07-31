@@ -11,92 +11,94 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.widget.ProgressBar;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    private ProgressBar progressBar;
     int currentTab;
 
-    private int LOGIN = 1;
     private FirebaseAuth firebaseAuth;
-    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener;
+
+    {
+        mOnNavigationItemSelectedListener = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
 
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
 
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-
-            Fragment fragment = null;
-            Class fragmentClass = null;
-            switch (item.getItemId()) {
-                case R.id.navigation_trends:
-                    if (currentTab == 0)
-                        return false;
-                    currentTab = 0;
-                    fragmentClass = TrendFragment.class;
-                    break;
-                case R.id.navigation_dashboard:
-                    if (currentTab==1)
-                        return false;
-                    currentTab=1;
-                    fragmentClass = DashboardFragment.class;
-                    break;
-                case R.id.navigation_notifications:
-                    if (currentTab==2)
-                        return false;
-                    currentTab=2;
-                    fragmentClass = MessageFragment.class;
-                    break;
-            }
-            if(fragmentClass!=null){
-                try{
-                    fragment = (Fragment) fragmentClass.newInstance();
-                } catch (InstantiationException e){
-                    e.printStackTrace();
-                } catch (IllegalAccessException ee){
-                    ee.printStackTrace();
+                Fragment fragment = null;
+                Class fragmentClass = null;
+                switch (item.getItemId()) {
+                    case R.id.navigation_trends:
+                        if (currentTab == 0)
+                            return false;
+                        currentTab = 0;
+                        fragmentClass = TrendFragment.class;
+                        break;
+                    case R.id.navigation_dashboard:
+                        if (currentTab == 1)
+                            return false;
+                        currentTab = 1;
+                        fragmentClass = DashboardFragment.class;
+                        break;
+                    case R.id.navigation_notifications:
+                        if (currentTab == 2)
+                            return false;
+                        currentTab = 2;
+                        fragmentClass = MessageFragment.class;
+                        break;
                 }
-                final Fragment finalFragment = fragment;
-                Thread changeFragment = new Thread() {
-                    @Override
-                    public void run() {
-                        FragmentManager fragmentManager = getSupportFragmentManager();
-                        fragmentManager.beginTransaction().replace(R.id.mainFragment, finalFragment).commit();
+                if (fragmentClass != null) {
+                    try {
+                        fragment = (Fragment) fragmentClass.newInstance();
+                    } catch (InstantiationException e) {
+                        e.printStackTrace();
+                    } catch (IllegalAccessException ee) {
+                        ee.printStackTrace();
                     }
-                };
-                changeFragment.run();
-                return true;
+                    final Fragment finalFragment = fragment;
+                    Thread changeFragment = new Thread() {
+                        @Override
+                        public void run() {
+                            FragmentManager fragmentManager;
+                            fragmentManager = getSupportFragmentManager();
+                            assert finalFragment != null;
+                            fragmentManager.beginTransaction().replace(R.id.mainFragment, finalFragment).commit();
+                        }
+                    };
+                    changeFragment.run();
+                    return true;
+                }
+                return false;
             }
-            return false;
-        }
-    };
+        };
+    }
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         firebaseAuth = FirebaseAuth.getInstance();
         FirebaseUser currentUser = firebaseAuth.getCurrentUser();
+
         if (currentUser == null) {
             Intent intent = new Intent(this, LoginActivity.class);
+            int LOGIN = 1;
             startActivityForResult(intent, LOGIN);
         }
 
         super.onCreate(savedInstanceState);
-        progressBar = findViewById(R.id.progressBar);
         setContentView(R.layout.activity_main);
         try {
-            Fragment fragment = (Fragment) DashboardFragment.class.newInstance();
+            Fragment fragment = DashboardFragment.class.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
             fragmentManager.beginTransaction().replace(R.id.mainFragment, fragment).commit();
             currentTab = 1;
         } catch (Exception e) {
             e.printStackTrace();
         }
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.navigation);
+        BottomNavigationView navigation = findViewById(R.id.navigation);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
     }
 

@@ -47,4 +47,15 @@
     <string name="closing_time">Closing Time</string>
     <string name="title_activity_maps">Map</string>
     <string name="max_occupancy">Max occupancy</string>
+    <string name="confirm_password">Confirm Password</string>
+    <string name="timeFormat">%d:%d</string>
+    <string name="mode_weekly">WEEKLY</string>
+    <string name="mode_daily">DAILY</string>
+    <string name="capacity_format">Capacity currently at: %d/%d</string>
+    <string name="last_updated_on">Last updated on:</string>
+    <string name="override_not_applied">Override is not applied</string>
+    <string name="override_is_applied">Override is applied</string>
+    <string name="open_cap">OPEN</string>
+    <string name="closed_cap">CLOSED</string>
+    <string name="percentage_format">%d%%</string>
 </resources>

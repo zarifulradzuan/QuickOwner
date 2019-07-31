@@ -1,6 +1,7 @@
 package com.example.quickowner;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -24,10 +25,10 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Objects;
+
 public class MapDialog extends DialogFragment {
     LocationManager locationManager;
-    LocationListener locationListener;
-    private MapView mapView;
     private GoogleMap googleMap;
     private Marker currentMarker;
     private Location currentLocation;
@@ -36,14 +37,13 @@ public class MapDialog extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        if (!(PackageManager.PERMISSION_GRANTED == getActivity().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION))) {
+        if (!(PackageManager.PERMISSION_GRANTED == Objects.requireNonNull(getActivity()).checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION))) {
             requestPermissions(new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1337);
         }
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        Bundle bundle = getArguments();
         LayoutInflater inflater = getActivity().getLayoutInflater();
-        View view = inflater.inflate(R.layout.map_dialog, null);
+        @SuppressLint("InflateParams") View view = inflater.inflate(R.layout.map_dialog, null);
         premiseLocationInterface = (PremiseLocationInterface) getContext();
         builder.setView(view)
                 .setTitle("Premise Location")
@@ -59,7 +59,7 @@ public class MapDialog extends DialogFragment {
 
                     }
                 });
-        mapView = view.findViewById(R.id.dialogMap);
+        MapView mapView = view.findViewById(R.id.dialogMap);
         mapView.onCreate(savedInstanceState);
         mapView.onResume();
 
@@ -91,7 +91,7 @@ public class MapDialog extends DialogFragment {
 
                         }
                     };
-                    locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                    locationManager = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, locationListener);
                     Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
                     if (location != null)

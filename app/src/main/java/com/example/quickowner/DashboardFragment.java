@@ -17,6 +17,8 @@ import com.example.quickowner.controller.PlaceController;
 import com.example.quickowner.model.Place;
 import com.google.firebase.auth.FirebaseAuth;
 
+import java.util.Objects;
+
 public class DashboardFragment extends Fragment implements PlaceController.PlaceListener {
     private TextView dshPlaceName, dshOpenStatus, dshLastUpdated, dshPlaceCurrMax, dshPercentage, dshOverrideStatus;
     private RadioButton dshOpen, dshClose, dshClear;
@@ -66,7 +68,7 @@ public class DashboardFragment extends Fragment implements PlaceController.Place
         placeController.setPlaceListener(this);
         try {
             FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
-            placeController.getPlace(firebaseAuth.getCurrentUser().getUid());
+            placeController.getPlace(Objects.requireNonNull(firebaseAuth.getCurrentUser()).getUid());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -74,20 +76,21 @@ public class DashboardFragment extends Fragment implements PlaceController.Place
         return rootView;
     }
 
+    @SuppressWarnings("deprecation")
     @Override
     public void returnPlace(Place place) {
         try {
             this.place = place;
             updating = true;
-            dshPlaceCurrMax.setText("Capacity currently at: " + place.getCurrentOccupancy() + "/" + place.getMaxOccupancy());
+            dshPlaceCurrMax.setText(String.format(Objects.requireNonNull(getContext()).getString(R.string.capacity_format), place.getCurrentOccupancy(), place.getMaxOccupancy()));
             dshPlaceName.setText(place.getPlaceName());
-            dshLastUpdated.setText("Last updated on: " + place.getLastUpdated());
+            dshLastUpdated.setText(String.format("%s%s", getContext().getString(R.string.last_updated_on), place.getLastUpdated()));
 
             if (place.getOverrideStatus() == -1) {
-                dshOverrideStatus.setText("Override is not applied");
+                dshOverrideStatus.setText(getContext().getString(R.string.override_not_applied));
                 dshClear.setChecked(true);
             } else {
-                dshOverrideStatus.setText("Override is applied");
+                dshOverrideStatus.setText(getContext().getString(R.string.override_is_applied));
                 if (place.getOverrideStatus() == 0)
                     dshClose.setChecked(true);
                 else
@@ -97,13 +100,13 @@ public class DashboardFragment extends Fragment implements PlaceController.Place
 
             PlaceController placeController = new PlaceController(place);
             if (placeController.isOpen()) {
-                dshOpenStatus.setText("OPEN");
+                dshOpenStatus.setText(getString(R.string.open_cap));
                 dshOpenStatus.setTextColor(getResources().getColor(R.color.occupancyGreen));
             } else {
-                dshOpenStatus.setText("CLOSED");
+                dshOpenStatus.setText(getString(R.string.closed_cap));
                 dshOpenStatus.setTextColor(getResources().getColor(R.color.occupancyRed));
             }
-            dshPercentage.setText(placeController.getFullness() + "%");
+            dshPercentage.setText(String.format(getString(R.string.percentage_format), placeController.getFullness()));
             placeFullness.setProgress(placeController.getFullness());
             if (placeController.getFullness() < 50)
                 placeFullness.setProgressTintList(ColorStateList.valueOf(getResources().getColor(R.color.occupancyGreen)));
