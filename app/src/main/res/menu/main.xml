@@ -2,6 +2,9 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/editPlace"
+        android:title="@string/edit_place_information" />
+    <item
         android:id="@+id/logOutMenu"
-        android:title="Log Out" />
+        android:title="@string/log_out" />
 </menu>

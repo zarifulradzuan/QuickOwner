@@ -47,7 +47,7 @@ import java.util.Map;
 public class PlaceController {
     public static final int MODE_WEEKLY = 1;
     public static final int MODE_DAILY = 2;
-    private static final String daysList[] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+    private static final String[] daysList = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
     private Place place;
     private FirebaseDatabase database;
     private PlaceListener placeListener;
@@ -148,7 +148,8 @@ public class PlaceController {
                 trendChart.setData(barData);
                 if (mode == MODE_DAILY) {
                     trendChart.zoom(3.5f, 1f, 0, 0);
-                }
+                } else
+                    trendChart.zoom(0f, 1f, 0, 0);
                 trendChart.invalidate();
             }
         },
@@ -249,8 +250,7 @@ public class PlaceController {
         OpeningHours today = place.getOpeningHours().get(currentDate.getDayOfWeek().getValue()-1);
         if(today.getOpening().equals(today.getClosing())) {
             return true;
-        }
-        else if (today.getOpening()==null){
+        } else if (today.getOpening() == null) {
             return false;
         }
         else if(LocalTime.parse(today.getOpening()).isAfter(LocalTime.parse(today.getClosing()))){

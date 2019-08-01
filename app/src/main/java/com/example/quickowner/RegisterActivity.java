@@ -168,14 +168,14 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
                     Thread thread = new Thread() {
                         @Override
                         public void run() {
-                            Calendar mcurrentTime = Calendar.getInstance();
-                            int hour = mcurrentTime.get(Calendar.HOUR_OF_DAY);
-                            int minute = mcurrentTime.get(Calendar.MINUTE);
+                            Calendar currentTime = Calendar.getInstance();
+                            int hour = currentTime.get(Calendar.HOUR_OF_DAY);
+                            int minute = currentTime.get(Calendar.MINUTE);
                             TimePickerDialog mTimePicker;
                             mTimePicker = new TimePickerDialog(RegisterActivity.this, new TimePickerDialog.OnTimeSetListener() {
                                 @Override
                                 public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                                    a.setText(String.format(getApplicationContext().getString(R.string.timeFormat), selectedHour, selectedMinute));
+                                    a.setText(String.format(getString(R.string.timeFormat), selectedHour, selectedMinute));
                                 }
                             }, hour, minute, true);//Yes 24 hour time
                             mTimePicker.setTitle("Select Time");
@@ -232,22 +232,23 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
                                         Objects.requireNonNull(user).getUid();
                                         uid = user.getUid();
                                         ArrayList<OpeningHours> openingHours = new ArrayList<>();
-                                        for (int i = 0; i < (openingHoursTextView.size() / 2) - 1; i += 2) {
+                                        for (int i = 0; i < (openingHoursTextView.size()); i += 2) {
                                             System.out.println(i + " " + (openingHoursTextView.size() / 2));
                                             OpeningHours openingHour = new OpeningHours();
-                                            if (!openingHoursSwitch.get(i).isChecked()) {
+                                            if (!openingHoursSwitch.get(i / 2).isChecked()) {
                                                 if (openingHoursTextView.get(i).getText().toString().equals(getString(R.string.opening_time)))
-                                                    openingHour.setOpening("");
+                                                    openingHour.setOpening(null);
                                                 else
                                                     openingHour.setOpening(openingHoursTextView.get(i).getText().toString());
                                                 if (openingHoursTextView.get(i + 1).getText().toString().equals(getString(R.string.closing_time)))
-                                                    openingHour.setClosing("");
+                                                    openingHour.setClosing(null);
                                                 else
                                                     openingHour.setClosing(openingHoursTextView.get(i + 1).getText().toString());
                                             } else {
                                                 openingHour.setOpening("00:00");
                                                 openingHour.setClosing("00:00");
                                             }
+                                            System.out.println(openingHour);
                                             openingHours.add(openingHour);
                                         }
 
@@ -373,11 +374,18 @@ public class RegisterActivity extends AppCompatActivity implements MapDialog.Pre
     }
 
     private boolean validate() {
-        if (!password.getText().equals(confirmPassword.getText()))
+        if (!password.getText().toString().equals(confirmPassword.getText().toString())) {
+            Toast.makeText(getApplicationContext(), "Password doesn't match", Toast.LENGTH_LONG).show();
             return false;
-        if (password.getText().toString().length() < 8)
+        }
+        if (password.getText().toString().length() < 8) {
+            Toast.makeText(getApplicationContext(), "Password is too short. Make sure it is more than 7 characters", Toast.LENGTH_LONG).show();
             return false;
-        return premiseLocation != null;
+        }
+        if (premiseLocation == null) {
+            Toast.makeText(getApplicationContext(), "Location not chosen", Toast.LENGTH_LONG).show();
+            return false;
+        } else return true;
     }
 
 

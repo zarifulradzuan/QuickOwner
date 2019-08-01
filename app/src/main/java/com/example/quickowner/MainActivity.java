@@ -16,6 +16,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
+    private static final int EDIT_PLACE = 1;
     int currentTab;
 
     private FirebaseAuth firebaseAuth;
@@ -90,6 +91,12 @@ public class MainActivity extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         try {
             Fragment fragment = DashboardFragment.class.newInstance();
             FragmentManager fragmentManager = getSupportFragmentManager();
@@ -107,6 +114,8 @@ public class MainActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == RESULT_CANCELED) {
             finish();
+        } else {
+            onStart();
         }
 
     }
@@ -130,6 +139,11 @@ public class MainActivity extends AppCompatActivity {
             firebaseAuth.signOut();
             finish();
             startActivity(getIntent());
+            return true;
+        }
+        if (id == R.id.editPlace) {
+            Intent intent = new Intent(this, EditPlaceActivity.class);
+            startActivityForResult(intent, EDIT_PLACE);
             return true;
         }
 
