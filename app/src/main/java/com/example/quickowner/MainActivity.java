@@ -16,7 +16,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 public class MainActivity extends AppCompatActivity {
-    private static final int EDIT_PLACE = 1;
+    private static final int EDIT_PLACE = 0;
+    private static final int LOGIN = 1;
     int currentTab;
 
     private FirebaseAuth firebaseAuth;
@@ -85,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
 
         if (currentUser == null) {
             Intent intent = new Intent(this, LoginActivity.class);
-            int LOGIN = 1;
             startActivityForResult(intent, LOGIN);
         }
 
@@ -112,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_CANCELED) {
+        if (resultCode == RESULT_CANCELED && requestCode == LOGIN) {
             finish();
         } else {
             onStart();

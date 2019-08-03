@@ -67,14 +67,14 @@ public class MessageFragment extends Fragment {
 
                 RequestQueue requestQueue = Volley.newRequestQueue(getContext());
                 String url="https://aesuneus.000webhostapp.com/qservice.php";
-                getActivity().findViewById(R.id.sendNotificationProgress).setVisibility(View.VISIBLE);
+                getActivity().findViewById(R.id.fullnessProgress).setVisibility(View.VISIBLE);
                 message.setEnabled(false);
                 sendMessage.setEnabled(false);
                 StringRequest stringRequest = new StringRequest(Request.Method.POST, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         System.out.println(response);
-                        getActivity().findViewById(R.id.sendNotificationProgress).setVisibility(View.INVISIBLE);
+                        getActivity().findViewById(R.id.fullnessProgress).setVisibility(View.INVISIBLE);
                         Toast.makeText(getContext(), "Successfully sent.", Toast.LENGTH_SHORT).show();
                         message.setText("");
                         message.setEnabled(true);
@@ -84,7 +84,7 @@ public class MessageFragment extends Fragment {
                         new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                getActivity().findViewById(R.id.sendNotificationProgress).setVisibility(View.INVISIBLE);
+                                getActivity().findViewById(R.id.fullnessProgress).setVisibility(View.INVISIBLE);
                                 Toast.makeText(getContext(), "Failed to send message.", Toast.LENGTH_SHORT).show();
                                 message.setEnabled(true);
                                 sendMessage.setEnabled(true);

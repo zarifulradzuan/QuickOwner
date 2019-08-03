@@ -66,4 +66,10 @@
     <string name="send_message">Send Message</string>
     <string name="previously_sent_notification">Previously sent notification.</string>
     <string name="swipe_left_to_delete_right_to_send_again">Swipe left to delete, right to send again.</string>
+    <string name="usual_occupancy_graph">Usual Occupancy Graph</string>
+    <string name="mode">Mode:</string>
+    <string-array name="modeArray">
+        <item>Daily</item>
+        <item>Weekly</item>
+    </string-array>
 </resources>

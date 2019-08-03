@@ -90,6 +90,8 @@ public class PlaceController {
                 } catch (JSONException e) {
                     Log.d("ERROR", "Failed to decode response");
                 }
+                if (dataSetJSON.length() == 0)
+                    return;
                 if (mode == MODE_WEEKLY) {
                     try {
                         for (int i = 0; i < 7; i++) {

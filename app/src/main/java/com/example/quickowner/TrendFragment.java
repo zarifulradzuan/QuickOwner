@@ -7,22 +7,20 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
+import android.widget.AdapterView;
 import android.widget.ProgressBar;
-import android.widget.Switch;
+import android.widget.Spinner;
 
 import com.example.quickowner.controller.PlaceController;
 import com.github.mikephil.charting.charts.BarChart;
 import com.google.firebase.auth.FirebaseAuth;
-
-import java.util.Objects;
 
 
 public class TrendFragment extends Fragment {
     private BarChart trendChart;
     private ProgressBar progressBar;
     private PlaceController placeController;
-    private Switch modeSwitch;
+    private Spinner modeSpinnger;
     private TrendFragment self;
     @Nullable
     @Override
@@ -34,26 +32,27 @@ public class TrendFragment extends Fragment {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         final String placeId = firebaseAuth.getUid();
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
-        progressBar = rootView.findViewById(R.id.sendNotificationProgress);
+        progressBar = rootView.findViewById(R.id.trendProgress);
         progressBar.setVisibility(View.VISIBLE);
         trendChart = rootView.findViewById(R.id.trendChart);
-        modeSwitch = rootView.findViewById(R.id.modeSwitch);
-
-        placeController = new PlaceController();
-
-        modeSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        modeSpinnger = rootView.findViewById(R.id.modeSpinner);
+        modeSpinnger.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 progressBar.setVisibility(View.VISIBLE);
-                if (isChecked) {
+                if (position == 0) {
                     displayChart(placeId, PlaceController.MODE_WEEKLY);
-                    modeSwitch.setText(getString(R.string.mode_weekly));
                 } else {
                     displayChart(placeId, PlaceController.MODE_DAILY);
-                    modeSwitch.setText(Objects.requireNonNull(getContext()).getString(R.string.mode_daily));
                 }
             }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+                modeSpinnger.setSelection(0);
+            }
         });
+        placeController = new PlaceController();
 
 
         displayChart(placeId, PlaceController.MODE_DAILY);
