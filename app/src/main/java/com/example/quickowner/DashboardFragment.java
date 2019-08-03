@@ -39,7 +39,7 @@ public class DashboardFragment extends Fragment implements PlaceController.Place
         dshPlaceCurrMax = rootView.findViewById(R.id.dshCurrMax);
         dshPlaceName = rootView.findViewById(R.id.dshPlaceName);
         dshPercentage = rootView.findViewById(R.id.dshPercentage);
-        placeFullness = rootView.findViewById(R.id.progressBar);
+        placeFullness = rootView.findViewById(R.id.sendNotificationProgress);
         dshOverrideStatus = rootView.findViewById(R.id.dshOverrideStatus);
         dshOpen = rootView.findViewById(R.id.dshOverrideOpen);
         dshClear = rootView.findViewById(R.id.dshOverrideClear);

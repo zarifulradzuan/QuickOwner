@@ -61,4 +61,9 @@
     <string name="edit_place_information">Edit place information</string>
     <string name="log_out">Log Out</string>
     <string name="save">Save</string>
+    <string name="messageTextHint">Enter message or promotion to send.</string>
+    <string name="message">Message</string>
+    <string name="send_message">Send Message</string>
+    <string name="previously_sent_notification">Previously sent notification.</string>
+    <string name="swipe_left_to_delete_right_to_send_again">Swipe left to delete, right to send again.</string>
 </resources>

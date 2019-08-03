@@ -146,6 +146,7 @@ public class PlaceController {
                 trendChart.getXAxis().setValueFormatter(valueFormatter);
                 trendChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
                 trendChart.setData(barData);
+                trendChart.resetZoom();
                 if (mode == MODE_DAILY) {
                     trendChart.zoom(3.5f, 1f, 0, 0);
                 } else

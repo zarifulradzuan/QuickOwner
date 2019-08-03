@@ -34,7 +34,7 @@ public class TrendFragment extends Fragment {
         FirebaseAuth firebaseAuth = FirebaseAuth.getInstance();
         final String placeId = firebaseAuth.getUid();
         View rootView = inflater.inflate(R.layout.fragment_trend, container, false);
-        progressBar = rootView.findViewById(R.id.progressBar);
+        progressBar = rootView.findViewById(R.id.sendNotificationProgress);
         progressBar.setVisibility(View.VISIBLE);
         trendChart = rootView.findViewById(R.id.trendChart);
         modeSwitch = rootView.findViewById(R.id.modeSwitch);
