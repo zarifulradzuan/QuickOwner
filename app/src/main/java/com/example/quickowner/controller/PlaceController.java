@@ -150,9 +150,9 @@ public class PlaceController {
                 trendChart.setData(barData);
                 trendChart.resetZoom();
                 if (mode == MODE_DAILY) {
-                    trendChart.zoom(3.5f, 1f, 0, 0);
-                } else
                     trendChart.zoom(0f, 1f, 0, 0);
+                } else
+                    trendChart.zoom(3.5f, 1f, 0, 0);
                 trendChart.invalidate();
             }
         },

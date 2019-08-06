@@ -41,9 +41,9 @@ public class TrendFragment extends Fragment {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 progressBar.setVisibility(View.VISIBLE);
                 if (position == 0) {
-                    displayChart(placeId, PlaceController.MODE_WEEKLY);
-                } else {
                     displayChart(placeId, PlaceController.MODE_DAILY);
+                } else {
+                    displayChart(placeId, PlaceController.MODE_WEEKLY);
                 }
             }
 
